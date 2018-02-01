@@ -319,8 +319,14 @@ func (c *Client) SendEmail(e *Email) (EmailResponse, error) {
 	var response EmailResponse
 	err = json.Unmarshal(b, &response)
 	if err != nil {
-		err := fmt.Errorf("Could not decode response format: %+v", err)
-		return emptyResp, err
+		var responseError EmailResponseError
+		if err = json.Unmarshal(b, &responseError); err != nil {
+			err := fmt.Errorf("Could not decode response format: %+v", err)
+			return emptyResp, err
+		} else {
+			err := fmt.Errorf(responseError.Message)
+			return emptyResp, err
+		}
 	}
 
 	return response, nil
@@ -419,10 +425,15 @@ func (c *Client) SendTemplateEmail(id int, to []string, e *EmailOptions) (EmailR
 	var response EmailResponse
 	err = json.Unmarshal(b, &response)
 	if err != nil {
-		err := fmt.Errorf("Could not decode response format: %+v", err)
-		return emptyResp, err
+		var responseError EmailResponseError
+		if err = json.Unmarshal(b, &responseError); err != nil {
+			err := fmt.Errorf("Could not decode response format: %+v", err)
+			return emptyResp, err
+		} else {
+			err := fmt.Errorf(responseError.Message)
+			return emptyResp, err
+		}
 	}
-
 	return response, nil
 }
 
@@ -499,7 +510,7 @@ func (c *Client) UpdateSMSCampaign(id int, s *SMSCampaign) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		err := fmt.Errorf("Request error: ", resp.Status)
+		err := fmt.Errorf("Request error: %s", resp.Status)
 		return err
 	}
 
