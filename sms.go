@@ -2,6 +2,7 @@ package sib
 
 /* Request Types */
 
+// SMSCampaign defines attributes of SIB campaigns
 type SMSCampaign struct {
 	Name           string `json:"name"` // Mandatory
 	Sender         string `json:"sender"`
@@ -13,6 +14,7 @@ type SMSCampaign struct {
 	Send_now       int    `json:"send_now"`       // 0 = campaign not ready to send, 1 = ready to send now
 }
 
+// SMSRequest defines attributes of an SMS request
 type SMSRequest struct {
 	To      string `json:"to"`   // Mobile Number (Mandatory)
 	From    string `json:"from"` // No more than 11 alphanumeric characters (Mandatory)
@@ -22,22 +24,26 @@ type SMSRequest struct {
 	Type    string `json:"type"` // "marketing" (default) or "transactional"
 }
 
+// SMSTest ...
 type SMSTest struct {
 	To string `json:"to"`
 }
 
 /* Response Types */
 
+// SMSCampaignData ...
 type SMSCampaignData struct {
 	Id int `json:"id"`
 }
 
+// SMSCampaignResponse ...
 type SMSCampaignResponse struct {
 	Code    string          `json:"code"`
 	Message string          `json:"message"`
 	Data    SMSCampaignData `json:"data"`
 }
 
+// SMSData defines attributes of an SMS transaction
 type SMSData struct {
 	Status           string       `json:"status"`
 	Number_sent      int          `json:"number_sent"`
@@ -52,10 +58,12 @@ type SMSData struct {
 	Error_code       int          `json:"error_code"`
 }
 
+// SMSReference ...
 type SMSReference struct {
 	One string `json:"1"`
 }
 
+// SMSResponse ...
 type SMSResponse struct {
 	Code    string  `json:"code"`
 	Message string  `json:"message"`

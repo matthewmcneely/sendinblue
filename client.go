@@ -4,6 +4,7 @@ package sib
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +26,7 @@ func NewClient(apiKey string) (*Client, error) {
 	emptyClient := &Client{}
 
 	if apiKey == "" {
-		err := fmt.Errorf("Error: Please provide a SendInBlue API Key.")
+		err := errors.New("Error: Please provide a SendInBlue API Key")
 		return emptyClient, err
 	}
 
@@ -198,19 +199,19 @@ func (c *Client) DeleteBouncedEmails(start, end, email string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		err := fmt.Errorf("Request error: ", resp.Status)
+		err := fmt.Errorf("Request error: %s", resp.Status)
 		return err
 	}
 
 	return nil
 }
 
-// GetTemplate ...
-func (c *Client) GetTemplate(template_id int) (CampaignResponse, error) {
+// GetTemplate returns templates
+func (c *Client) GetTemplate(templateID int) (CampaignResponse, error) {
 
 	emptyResp := CampaignResponse{}
 
-	url := fmt.Sprintf("https://api.sendinblue.com/v2.0/campaign/%v/detailsv2", template_id)
+	url := fmt.Sprintf("https://api.sendinblue.com/v2.0/campaign/%v/detailsv2", templateID)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		err := fmt.Errorf("Could not create http request: %+v", err)
@@ -536,4 +537,72 @@ func (c *Client) UpdateTemplate(id int, t *Template) error {
 	}
 
 	return nil
+}
+
+// GetAccount returns account details
+func (c *Client) GetAccount() (AccountDetails, error) {
+
+	emptyResp := AccountDetails{}
+
+	req, err := http.NewRequest("GET", "https://api.sendinblue.com/v2.0/account", nil)
+	if err != nil {
+		err := fmt.Errorf("Could not create http request: %+v", err)
+		return emptyResp, err
+	}
+	req.Header.Add("api-key", c.apiKey)
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		err := fmt.Errorf("Could not send http request: %+v", err)
+		return emptyResp, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err := fmt.Errorf("Could not recognize API response format: %+v", err)
+		return emptyResp, err
+	}
+
+	var response AccountDetails
+	err = json.Unmarshal(b, &response)
+	if err != nil {
+		err := fmt.Errorf("Could not decode response format: %+v", err)
+		return emptyResp, err
+	}
+
+	return response, nil
+}
+
+// GetSMTPDetails returns SMTP account information
+func (c *Client) GetSMTPDetails() (SMTPAccountDetails, error) {
+
+	emptyResp := SMTPAccountDetails{}
+
+	req, err := http.NewRequest("GET", "https://api.sendinblue.com/v2.0/account/smtpdetail", nil)
+	if err != nil {
+		err := fmt.Errorf("Could not create http request: %+v", err)
+		return emptyResp, err
+	}
+	req.Header.Add("api-key", c.apiKey)
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		err := fmt.Errorf("Could not send http request: %+v", err)
+		return emptyResp, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err := fmt.Errorf("Could not recognize API response format: %+v", err)
+		return emptyResp, err
+	}
+
+	var response SMTPAccountDetails
+	err = json.Unmarshal(b, &response)
+	if err != nil {
+		err := fmt.Errorf("Could not decode response format: %+v", err)
+		return emptyResp, err
+	}
+
+	return response, nil
 }

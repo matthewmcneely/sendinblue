@@ -1,3 +1,4 @@
-.vscode/settings.json
 bin
 pkg
+.vscode/settings.json
+src
