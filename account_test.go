@@ -7,7 +7,7 @@ import (
 
 func TestAccountDetail(t *testing.T) {
 	// recommendation: set API key as system environment variable
-	apiKey := "jza1d0VDcUWYvfIA"
+	apiKey := ""
 
 	// Create SendInBlue Client
 	sibClient, err := NewClient(apiKey)
@@ -24,7 +24,7 @@ func TestAccountDetail(t *testing.T) {
 }
 
 func TestAccountSMTPStatus(t *testing.T) {
-	apiKey := "jza1d0VDcUWYvfIA"
+	apiKey := ""
 
 	// Create SendInBlue Client
 	sibClient, err := NewClient(apiKey)
